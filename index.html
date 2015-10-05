@@ -1,0 +1,55 @@
+<!doctyle html>
+<html>
+<!-- http://strd6.com/2011/09/html5-javascript-pasting-image-data-in-chrome/ -->
+<head>
+    <script src='//code.jquery.com/jquery-1.11.3.min.js'>
+    </script>
+    <script src='./js/jquery.filedrop.js'></script>
+    <script src='./js/jquery.paste_image_reader.js'></script>
+    <script src='./js/file_upload.js'></script>
+    <link rel="stylesheet" type="text/css" href="http://s.cdpn.io/9729/cyborg_bootstrap.min.css"></link>
+    <link rel="stylesheet" type="text/css" href="./css/style.css"></link>
+</head>
+<body>
+<div class="container fluid">
+  <div class="header"> 
+    <H1>Tableau internal image hosting</H1>
+    <H2>Drop a file or paste (Ctrl+V, Cmd+V) image content here.</H1>
+  </div>
+  <div class="row">
+    <br/>
+    <span>Permalink: </span><a id="permalink" />
+  </div>
+  <div class="row"><div class="span4 target active"></div>
+  </div>
+  <div style="display:none">
+  <div class="span12">
+    <br />
+    <div class="input-prepend">
+      <span class="add-on">size</span>
+      <input class="span2 size" id="size" type="text" placeholder="size of pasted image">
+    </div>
+  
+    <div class="input-prepend">
+      <span class="add-on">type</span>
+      <input class="span2 type" id="type" type="text" placeholder="Image type pasted">
+    </div>
+
+    <div class="input-prepend">
+      <span class="add-on">width</span>
+      <input class="span2 type" id="width" type="text" placeholder="Width">
+    </div>
+  
+    <div class="input-prepend">
+      <span class="add-on">height</span>
+      <input class="span2 type" id="height" type="text" placeholder="Height">
+    </div>
+  </div>
+  <div class="span12">
+      <legend>The dataURL of the image <a href="" id="test" target="_blank">See image in new window</a></legend>
+      <textarea name=""  cols="30" rows="10" class="data span12"></textarea>
+  </div> 
+  </div>
+</div>
+</body>
+</html>

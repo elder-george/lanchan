@@ -1,0 +1,9 @@
+{
+  "name": "tabchan",
+  "version": "0.0.1",
+  "dependencies": {
+    "express": "~3.4.4",
+    "fs-extra": "~0.24.0",
+    "connect-multiparty":"~2.0.0"
+  }
+}
