@@ -12,9 +12,8 @@ function uploadFile(results){
         success: function(e){ 
             var permalink = $("#permalink");
             permalink.attr('href', window.location.protocol + "//" + window.location.host + e.path);
-            permalink.text(window.location.host + e.path);
+            permalink.text(window.location.protocol + "//" + window.location.host + e.path);
         }
-      //"image/png"
   });
 }
 
@@ -69,27 +68,5 @@ $(function() {
   $test = $('#test');
   $width = $('#width');
   $height = $('#height');
-/*  $('.target').on('click', function() {
-    var $this = $(this);
-    var bi = $this.css('background-image');
-    if (bi!='none') {
-        $data.text(bi.substr(4,bi.length-6));
-    }
-                    
-                    
-    $('.active').removeClass('active');
-    $this.addClass('active');
-    
-    $this.toggleClass('contain');
-    
-    $width.val($this.data('width'));
-    $height.val($this.data('height'));
-    if ($this.hasClass('contain')) {
-      $this.css({'width':$this.data('width'), 'height':$this.data('height'), 'z-index':'10'})
-    } else {
-      $this.css({'width':'', 'height':'', 'z-index':''})
-    }
-   
-  })*/
 })
 })($);
