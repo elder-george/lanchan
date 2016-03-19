@@ -4,6 +4,8 @@
 <head>
     <script src='//code.jquery.com/jquery-1.11.3.min.js'>
     </script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js">
+    </script>
     <script src='./js/jquery.filedrop.js'></script>
     <script src='./js/jquery.paste_image_reader.js'></script>
     <script src='./js/file_upload.js'></script>
@@ -20,7 +22,13 @@
     <br/>
     <span>Permalink: </span><a id="permalink" />
   </div>
-  <div class="row"><div class="span4 target active"></div>
+  <div class="row">
+    <div class="span4 target active"></div>
+    <div class="span4">
+      <h4>History:</h4>
+      <ul id="history">
+      </ul>
+    </div>
   </div>
   <div style="display:none">
   <div class="span12">

@@ -11,10 +11,28 @@ function uploadFile(results){
         contentType:false,
         success: function(e){ 
             var permalink = $("#permalink");
-            permalink.attr('href', window.location.protocol + "//" + window.location.host + e.path);
-            permalink.text(window.location.protocol + "//" + window.location.host + e.path);
+            var url = window.location.protocol + "//" + window.location.host + e.path;
+            permalink.attr('href', url);
+            permalink.text(url);
+            if (window.localStorage){
+                window.localStorage.setItem(new Date(), JSON.stringify({ url:url}));
+                populateHistory($history, window.localStorage);
+            }
         }
   });
+}
+
+function populateHistory(history, items){
+    history.empty();
+    for(var key in items){
+        var data = JSON.parse(items[key]);
+        //$('li').text(data.url).appendTo($history);
+
+        $('<li/>')
+            .append($('<a/>').text(moment(key).format("MM DD, hh:mm:ss")).attr('href', data.url))
+            .prependTo($history);
+        //$history.append("<li>"+data.url+"</li>");
+    }
 }
 
 
@@ -60,7 +78,7 @@ $('html').fileDrop({
 });
 
 
-var $data, $size, $type, $test, $width, $height;
+var $data, $size, $type, $test, $width, $height, $history;
 $(function() {
   $data = $('.data');
   $size = $('.size');
@@ -68,5 +86,8 @@ $(function() {
   $test = $('#test');
   $width = $('#width');
   $height = $('#height');
+  $history = $("#history");
+  if (window.localStorage)
+    populateHistory($history, window.localStorage)
 })
 })($);
