@@ -22,16 +22,37 @@ function uploadFile(results){
   });
 }
 
+function deleteFile(url, onSuccess){
+    $.ajax({
+        type: "DELETE",
+        url: "/upload/"+url,
+        success: onSuccess
+    });
+}
+
 function populateHistory(history, items){
     history.empty();
     for(var key in items){
         var data = JSON.parse(items[key]);
-        //$('li').text(data.url).appendTo($history);
+        if (! data) continue;
+        var fileName = data.url.split('/').pop();
+        var $historyItem = $('<li/>')
+            .append([
+                $('<a/>').text(moment(key).format("MM DD, hh:mm:ss")).attr('href', data.url),
+                $('<a/>').attr('class', 'del').attr('url', fileName).attr('title', 'delete this file?').text('[X]')
+            ]);
+        $historyItem.prependTo($history);
 
-        $('<li/>')
-            .append($('<a/>').text(moment(key).format("MM DD, hh:mm:ss")).attr('href', data.url))
-            .prependTo($history);
-        //$history.append("<li>"+data.url+"</li>");
+        $historyItem.find('a.del').on('click', function(e){
+            var $this = $(this);
+            var url = $this.attr('url');
+            deleteFile(url, function(){
+                $this.closest('li').remove();
+                if (window.localStorage){
+                    window.localStorage.removeItem(key);
+                }
+            })
+        });
     }
 }
 

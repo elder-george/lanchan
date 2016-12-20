@@ -22,3 +22,9 @@ textarea {
 .active {
   box-shadow: 0px 0px 10px 10px rgba(0,0,255,.4);
 }
+
+.del{
+    margin-left: 20px;
+}
+
+.spacer {  margin-top: 40px; }
