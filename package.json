@@ -1,6 +1,7 @@
 {
   "name": "tabchan",
   "version": "0.0.1",
+  "type": "module",
   "dependencies": {
     "express": ">=5.1.0",
     "multer": ">=1.4.4"
