@@ -1,52 +1,49 @@
 <!doctyle html>
   <html>
-  <!-- http://strd6.com/2011/09/html5-javascript-pasting-image-data-in-chrome/ -->
 
   <head>
+    <meta charset="utf-8" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js">
     </script>
 
-    <link rel="stylesheet" type="text/css" href="http://s.cdpn.io/9729/cyborg_bootstrap.min.css">
-    </link>
     <link rel="stylesheet" type="text/css" href="./css/style.css">
     </link>
     <title>Share image</title>
   </head>
 
   <body>
-    <template id="history-item-template">
-      <li>
-        <a class="history-link" target="_blank"></a>
-        <a href="#" class="delete-link">[X]</a>
-        <span class="history-timestamp"></span>
-      </li>
-    </template>
-
-    <div class="container fluid">
-      <div class="header">
-        <H1>Tableau internal image hosting</H1>
-        <H2>Drop a file or paste (Ctrl+V, Cmd+V) image content here.</H1>
+    <header>
+      <h1>DIY image hosting</h1>
+      <h2>Drop a file or paste (Ctrl+V, Cmd+V) image content here.</h2>
+    </header>
+    <div class="row" style="gap:5em;">
+      <div style="flex-grow: 1;">
+        <label>
+          <h4>Permalink:</h4> <a id="permalink"></a>
+        </label>
+        <div id='preview'></div>
       </div>
-      <div class="row">
-        <br />
-        <label>Permalink: <a id="permalink"></a></label>
-      </div>
-      <div class="row">
-        <div class="span4 target active"></div>
-        <div class="span4">
-          <h4>History:</h4>
-          <ul id="history">
-          </ul>
-        </div>
-      </div>
-      <div class="row spacer" />
-      <div class="row whats-new">
-        <h4>What's new:</h4>
-        <ul>
-          <li> Now you can delete file by clicking '[X]' link at the "history" pane! No more embarassment!
+      <div>
+        <h4>History:</h4>
+        <ul id="history">
+          <template id="history-item-template">
+            <li class="history-item">
+              <a class="history-link" target="_blank"></a>
+              <button class="delete-button">✖️</button>
+            </li>
+          </template>
         </ul>
       </div>
     </div>
+    <footer>
+      <h4>What's new:</h4>
+      <ul>
+        <li> Now with vanilla JS and (almost) no dependencies! </li>
+      </ul>
+    </footer>
     <script src='./js/file_upload.js'></script>
   </body>
 
