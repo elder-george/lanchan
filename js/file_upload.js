@@ -1,114 +1,111 @@
-(function ($) {
+"use strict";
 
-    function uploadFile(results) {
-        var fd = new FormData();
-        fd.append("file", results.file);
-        $.ajax({
-            type: "POST",
-            url: "/upload",
-            data: fd,
-            processData: false,
-            contentType: false,
-            success: function (e) {
-                var permalink = $("#permalink");
-                var url = window.location.protocol + "//" + window.location.host + '/' + e.path;
-                permalink.attr('href', url);
-                permalink.text(url);
-                if (window.localStorage) {
-                    window.localStorage.setItem(new Date(), JSON.stringify({ url: url }));
-                    populateHistory($history, window.localStorage);
+window.addEventListener('storage', function ({ storageArea }) {
+    populateHistory(this.document.querySelector('#history'), storageArea);
+});
+
+/** @type {HTMLTemplateElement} */
+const historyItemTemplate = document.querySelector('#history-item-template');
+
+async function uploadFile({ file }) {
+    const fd = new FormData();
+    fd.append('file', file);
+    const result = await fetch('/upload', {
+        method: 'POST',
+        body: fd,
+    });
+    if (!result.ok) {
+        alert("Upload failed: " + result.statusText);
+        return;
+    }
+    const json = await result.json();
+    const permalink = document.querySelector("#permalink");
+    const url = window.location.protocol + "//" + window.location.host + '/' + json.path;
+    permalink.href = url;
+    permalink.textContent = url;
+    localStorage.setItem(new Date(), JSON.stringify({ url }));
+    // storage event is not fired on the same window that made the change
+    dispatchEvent(new StorageEvent('storage', { storageArea: localStorage }));
+}
+
+async function deleteFile(filename) {
+    return (await fetch('/upload/' + filename, {
+        method: 'DELETE',
+    })).ok;
+}
+
+function populateHistory(/** @type {HTMLUListElement} */history, /** @type {Storage} */ items) {
+    history.replaceChildren();
+    for (let i = 0; i < items.length; i++) {
+        const key = items.key(i);
+        const value = items.getItem(key);
+        const { url } = JSON.parse(value);
+        if (!url) continue;
+        const /**@type {HTMLUListElement} */ historyItem = historyItemTemplate.content.cloneNode(true).querySelector('li');
+        Object.assign(historyItem.querySelector('.history-link'), {
+            textContent: moment(key).format("MM DD, hh:mm:ss"),
+            href: url
+        });
+        Object.assign(historyItem.querySelector('.delete-link'),
+            {
+                title: 'delete this file?',
+                textContent: '[X]',
+            }).addEventListener('click', async function (e) {
+                if (await deleteFile(url.split('/').pop())) {
+                    history.removeChild(historyItem);
+                    localStorage.removeItem(key);
                 }
-            }
-        });
-    }
-
-    function deleteFile(filename, onSuccess) {
-        $.ajax({
-            type: "DELETE",
-            url: "/upload/" + filename,
-            success: onSuccess
-        });
-    }
-
-    function populateHistory(history, items) {
-        history.empty();
-        for (var key in items) {
-            var data = JSON.parse(items[key]);
-            if (!data) continue;
-            var fileName = data.url.split('/').pop();
-            var $historyItem = $('<li/>')
-                .append([
-                    $('<a/>').text(moment(key).format("MM DD, hh:mm:ss")).attr('href', data.url),
-                    $('<a/>').attr('class', 'del').attr('url', fileName).attr('title', 'delete this file?').text('[X]')
-                ]);
-            $historyItem.prependTo($history);
-
-            $historyItem.find('a.del').on('click', function (e) {
-                var $this = $(this);
-                var url = $this.attr('url');
-                deleteFile(url, function () {
-                    $this.closest('li').remove();
-                    if (window.localStorage) {
-                        window.localStorage.removeItem(key);
-                    }
-                })
             });
-        }
+        history.prepend(historyItem);
     }
+}
 
-
-
-    $("html").pasteImageReader(function (results) {
-        var dataURL, filename;
-        filename = results.filename, dataURL = results.dataURL;
-        $data.text(dataURL);
-        $size.val(results.file.size);
-        $type.val(results.file.type);
-        $test.attr('href', dataURL);
-        var img = document.createElement('img');
-        img.src = dataURL;
-        var w = img.width;
-        var h = img.height;
-        $width.val(w)
-        $height.val(h);
-        uploadFile(results);
-        return $(".active").css({
-            backgroundImage: "url(" + dataURL + ")"
-        }).data({ 'width': w, 'height': h });
+/** @returns {Promise<string>} */
+function readAsDataURL(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.onerror = (e) => reject(e);
+        reader.readAsDataURL(file);
     });
+}
 
-    $('html').fileDrop({
-        dragOver: function (e) {
-            debugger;
-        },
-        onFileRead: function (e) {
-            results = e[0];
-            uploadFile(results);
-            var img = document.createElement('img');
-            img.src = results.dataURL;
-            var w = img.width;
-            var h = img.height;
-            return $(".target").css({
-                backgroundImage: "url(" + results.dataURL + ")",
-                width: w, height: h,
-            }).data({ 'width': w, 'height': h });
-        },
+async function setPreviewAndUpload(file) {
+    const dataUrl = await readAsDataURL(file);
+    const preview = document.querySelector('.active');
+    preview.style.backgroundImage = `url(${dataUrl})`;
+    preview.width = file.width;
+    preview.height = file.height;
+    await uploadFile({ file, dataUrl });
+}
 
-        removeDataUriScheme: true,
-        decodeBase64: true
-    });
+const body = document.querySelector('body');
+body.addEventListener('paste', async function (e) {
+    e.preventDefault();
+    const { clipboardData } = e;
 
+    for (let i = 0; i < clipboardData.items.length; i++) {
+        const type = clipboardData.items[i].type;
+        if (type.startsWith('image/')) {
+            const file = clipboardData.items[i].getAsFile();
+            await setPreviewAndUpload(file);
+            break;
+        }
+    };
+});
 
-    var $data, $size, $type, $test, $width, $height, $history;
-    $(function () {
-        $data = $('.data');
-        $size = $('.size');
-        $type = $('.type');
-        $test = $('#test');
-        $width = $('#width');
-        $height = $('#height');
-        $history = $("#history");
-        if (window.localStorage)
-            populateHistory($history, window.localStorage)
-    })
-})($);
+body.addEventListener('dragover', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+});
+
+body.addEventListener('drop', async function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    const files = e.dataTransfer.files;
+    for (const file of files) {
+        await setPreviewAndUpload(file);
+        break;
+    }
+});
+populateHistory(document.querySelector('#history'), window.localStorage)

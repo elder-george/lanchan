@@ -4,12 +4,10 @@
   by Chris Barr
   https://github.com/chrismbarr/FileDrop/
 */
-
+'use strict';
 (function ($) {
-    'use strict';
-
     var exitTimer = null;
-    
+
     function stopEvent(ev) {
         ev.stopPropagation();
         ev.preventDefault();
@@ -23,7 +21,7 @@
             return '';
         }
     }
-    
+
     //The options object is passed in and normalized
     function normalizeOptions(options) {
         //If a function was passed in instead of an options object,
@@ -52,7 +50,7 @@
 
         return opts;
     }
-    
+
     //This is called for each initially selected DOM element
     function setEvents(el, opts) {
 
@@ -74,7 +72,7 @@
 
         el.addEventListener('drop', function (ev) {
             //Files dropped
-            
+
             $(opts.addClassTo).removeClass(opts.overClass);
             stopEvent(ev);
             var fileList = ev.dataTransfer.files;
@@ -127,7 +125,7 @@
             if (opts.decodeBase64) {
                 fileData = decodeBase64String(fileData);
             }
-            
+
             //Add the current file to the array
             fileArray.push({
                 name: theFile.name,
@@ -144,11 +142,11 @@
             }
         };
     }
-    
-    
+
+
     //=============================================================================================
-    
-    
+
+
     //Extend jQuery to allow for this to be a public function
     $.removeUriScheme = function (str) {
         return str.replace(/^data:.*;base64,/, '');
@@ -158,7 +156,7 @@
     $.support.fileDrop = (function () {
         return !!window.FileList;
     })();
-    
+
     // jQuery plugin initialization
     $.fn.fileDrop = function (options) {
         var opts = normalizeOptions(options);
@@ -167,7 +165,7 @@
         return this.each(function () {
             //Make a copy of the options for each selected element
             var perElementOptions = opts;
-			
+
             //If this option was not set, make it the same as the drop area
             if (perElementOptions.addClassTo.length === 0) {
                 perElementOptions.addClassTo = $(this);
